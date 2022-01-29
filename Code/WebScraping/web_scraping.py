@@ -7,7 +7,9 @@ import warnings
 import pickle
 import glob
 import unidecode
+import os.path
 
+    
 def get_song_links_from_artist_url(artist_url):
     artist_result = requests.get(artist_url)
     artist_doc = BeautifulSoup(artist_result.text, 'html.parser')
@@ -21,7 +23,12 @@ def get_song_links_from_artist_url(artist_url):
 
 def get_chords_from_song_url(song_url):
 #     song_url = unidecode.unidecode(song_url, errors='replace')
-    song_result = requests.get(song_url)
+    try:
+        song_result = requests.get(song_url)
+    except UnicodeDecodeError as e: 
+        print(e)
+        return None
+        
     song_doc = BeautifulSoup(song_result.text, 'html.parser')
     song_chords = song_doc.find("div",class_= "coremain")
     if song_chords is not None:
@@ -74,31 +81,42 @@ def get_last_file(save_dir):
     return json_files[-1]
     
 
-def get_last_artist_index(last_json_file):
+def get_last_artist_index(last_json_file, artists_df):
     with open(last_json_file) as f:
         chords_data = json.load(f)
-    last_index  = chords_data['artists'][-1]['index']
-    return last_index
+    last_artist_name  = chords_data['artists'][-1]['name_spotify']
+    last_artist_index = artists_df[artists_df['name'] == last_artist_name].index[0]
+    return last_artist_index
 
 
-def create_chord_data(artist_df_path, save_dir, save_every, artists_per_file, songs_per_artist=float('inf')):
-    artist_df = prepare_artists_df(artist_df_path)
+def create_chord_data(artists_df, save_dir, save_every, artists_per_file, songs_per_artist=float('inf')):
+    if isinstance(artists_df, str):
+        artists_df = prepare_artists_df(artists_df_path)
     base_url = "https://www.e-chords.com/chords/"
     json_data = {"artists": []}
     
-    with open(save_dir + 'missing.pkl', 'rb') as f:
-        missing_list = pickle.load(f)
-    print(f'{len(missing_list)=}')
+    missing_file = save_dir + 'missing.pkl'
+    
+    if os.path.isfile(missing_file):
+        with open(missing_file, 'rb') as f:
+            missing_list = pickle.load(f)
+        print(f'{len(missing_list)=}')
+    else:
+        missing_list = []
+    
+    if os.path.isfile(save_dir + 'chords_0.json'):
+        last_file = get_last_file(save_dir)
+        file_ending = get_last_file_ending_num(last_file) + 1
+        artist_index = get_last_artist_index(last_file, artists_df) + 1
 
-    last_file = get_last_file(save_dir)
-    
-    file_ending = get_last_file_ending_num(last_file) + 1
-    artist_index = get_last_artist_index(last_file) + 1
-    
-    print(f'{file_ending=}')
-    print(f'{artist_index=}')
+        print(f'{file_ending=}')
+        print(f'{artist_index=}')
+    else:
+        file_ending = 0
+        artist_index = 0
+        
     artist_count = 0
-    for i, row in tqdm(artist_df.iterrows(), total=len(artist_df)):
+    for i, row in tqdm(artists_df.iterrows(), total=len(artists_df)):
         if i <= artist_index:
             continue
         
@@ -107,7 +125,7 @@ def create_chord_data(artist_df_path, save_dir, save_every, artists_per_file, so
             songs = get_song_chords_of_an_artist(artist_url, end_at=songs_per_artist)
 
         except AttributeError:
-            print(f'did not find {row["name_e_chords"]}')
+            print(f'did not find artist {artist_url}')
             missing_list.append(row['name_e_chords'])
             continue
         json_data['artists'].append(
@@ -160,9 +178,9 @@ def json_to_df(chords_json):
 if __name__ == '__main__':
     save_dir = '/home/student/Desktop/Project/Data/ChordsData/'
 
-    artist_df_path = '/home/student/Desktop/Project/Data/artists.csv'
+    artists_df_path = '/home/student/Desktop/Project/Data/artists.csv'
 
-    create_chord_data(artist_df_path=artist_df_path, save_dir=save_dir, save_every=5, artists_per_file=100)
+    create_chord_data(artists_df=artists_df_path, save_dir=save_dir, save_every=5, artists_per_file=100)
 
 
     # with open(save_dir + 'chords_1.json') as json_file:
