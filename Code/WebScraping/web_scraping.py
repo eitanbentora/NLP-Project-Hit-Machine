@@ -164,12 +164,12 @@ def load_json_files(save_dir, load_last_file=True):
     return {'artists': artists}
 
 def json_to_df(chords_json):
-    df_dict = {'artist_name': [], 'song_name': [], 'chords': []}
+    df_dict = {'artist_name': [], 'song_name': [], 'chords&lyrics': []}
     for artist in chords_json['artists']:
         df_dict['artist_name'] += [artist['name_spotify']]*len(artist['songs'])
         for song in artist['songs']:
             df_dict['song_name'].append(song['name'])
-            df_dict['chords'].append(song['chords'])
+            df_dict['chords&lyrics'].append(song['chords'])
 
     return pd.DataFrame(df_dict)
 
