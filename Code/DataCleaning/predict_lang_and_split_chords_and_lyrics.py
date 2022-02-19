@@ -1,7 +1,7 @@
 import pandas as pd
 import data_cleaning as data_cleaning
 from tqdm import tqdm
-tqdm.pandas() #bedek
+tqdm.pandas()
 
 chords_df = pd.read_pickle('/home/student/Desktop/Project/Data/chords.pkl')
 print("spliting")
