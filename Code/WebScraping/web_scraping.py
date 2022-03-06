@@ -148,7 +148,6 @@ def create_chord_data(artists_df, save_dir, save_every, artists_per_file, songs_
             file_ending += 1
             
         artist_count += 1
-
         
         
 def load_json_files(save_dir, load_last_file=True):
@@ -162,6 +161,7 @@ def load_json_files(save_dir, load_last_file=True):
             chords_data = json.load(f)
             artists += chords_data['artists']
     return {'artists': artists}
+
 
 def json_to_df(chords_json):
     df_dict = {'artist_name': [], 'song_name': [], 'chords&lyrics': []}

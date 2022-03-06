@@ -3,6 +3,7 @@ import pandas as pd
 import itertools
 import re
 
+
 def predict_lang(text):
     try:
         lang = detect(text)
@@ -11,13 +12,14 @@ def predict_lang(text):
         lang = None
     return lang
 
+
 def is_chord(word):
     chord_regex = r"^\(?([ABCDEFG])([#b]?)(m?)-?(\(?[245679]?\)?)(\-?)(/?)((dim)|(sus)|(maj)|(aug)|)(\+?)(add)?(\(?([245679]|11|13)?\)?)M?(\*?)((/[ABCDEFG][#b]?)?)(\(hold\))?\)?$"
     return bool(re.match(chord_regex, word)) and word != ''
 
 
 def is_chord_line(line):
-    special_words= ['intro', 'x2', 'solo', 'interlude', 'break', '%', 'bridge', 'introdução']
+    special_words = ['intro', 'x2', 'solo', 'interlude', 'break', '%', 'bridge', 'introdução']
     
     if line.lower().startswith('bridge:'):
         return True
@@ -37,6 +39,7 @@ def is_chord_line(line):
     if chord_count/word_count >= 1/2:
         return True
     return False
+
 
 def is_tab_line(line):
     if 'hide this tab' in line.lower():
@@ -70,4 +73,3 @@ def split_chords_lyrics_and_tabs(song):
         else:
             lyrics[i] = line
     return chords, lyrics, tabs
-    
