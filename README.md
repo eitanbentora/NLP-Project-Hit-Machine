@@ -18,7 +18,7 @@ Since we did not find any dataset available containing lyrics and chords, we web
 1,104,349 artists including a popularity metric and artist's genres
 2. Used the names in the Spotify dataset to find all the artists' songs on the website e-chords
 3. Downloaded all the artists' songs and chords that were available on e-chords
-4. The song's chords lyrics and tabs were all raw text for example:
+4. The song's chords lyrics and tabs were all raw text, for example:
 <pre>
 Capo on 3rd fret<br>\t  \t\t <br>
 \r<br>Verse 1:<br>G             G/B                         C <br>  Do you love the rain, 
