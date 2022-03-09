@@ -36,7 +36,7 @@ In each of these dicts the key was the line number in the original song and the 
 2. Predicting the language of every song using [langdetect](https://pypi.org/project/langdetect/ "langdetect") based on the 
 lyrics of the song. 
 3. Keeping only songs in English. (The original dataset has many songs in Portuguese Spanish and more)
-4. The code for the web-scraping can be found in: `/Project/Code/DataCleaning`
+4. The code for the data cleaning can be found in: `/Project/Code/DataCleaning`
 
 ## Models
 
