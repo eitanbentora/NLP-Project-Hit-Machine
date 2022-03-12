@@ -204,7 +204,13 @@ To check if our model is as original as a real song, we decided to do the follow
     2. We did the same for the control lyrics with the population lyrics.
     3. We compared the values that we got from the test lyrics and compared them to the ones we get from the control lyrics using one-sided T test with the following hypothesis: 
        * H0 - generated lyrics are as original as real songs. 
-       * H1 - generated lyrics are less original than real songs.    
+       * H1 - generated lyrics are less original than real songs.
+
+The results:
+       
+![statistical_test_ngram](Images/statistical_test_ngram.jpeg "statistical_test_ngram")
+
+
 ## Reproduction
 1. Load the data [Add link to data chords_split_lang.pkl](https://pypi.org/project/langdetect/ "langdetect")
 2. Filter only the wanted language and save it as a df in pickle format
