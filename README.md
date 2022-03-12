@@ -12,9 +12,9 @@ reproduction instructions.
 ## Data
 
 Since we did not find any dataset available containing lyrics and chords, we web-scraped a new dataset.
-
+The created dataset can be found in [chords-and-lyrics-dataset](https://www.kaggle.com/eitanbentora/chords-and-lyrics-dataset "chords-and-lyrics-dataset")
 ### Scraping the data:
-1. Used the Spotify [artists.csv](https://www.e-chords.com/chords/ "artists.csv") file containing information about 
+1. Used the Spotify [artists.csv](https://www.kaggle.com/ehcall/spotify-artists "artists.csv") file containing information about 
 1,104,349 artists including a popularity metric and artist's genres
 2. Used the names in the Spotify dataset to find all the artists' songs on the website e-chords
 3. Downloaded all the artists' songs and chords that were available on e-chords
@@ -196,15 +196,15 @@ is the path chosen.
 
 ## Evaluation
 To check if our model is as original as a real song, we decided to do the following:
-1. Generated 45 song lyrics, using our best model. We will reffer to these as the test lyrics.
-2. Sampled 45 real songs, we will reffer to these as the control lyrics.
-3. From all the songs other then the 45 songs sampled, we sampled 10k songs, we will reffer to these as the lyrics population.
+1. Generated 45 song lyrics, using our best model. We will refer to these as the test lyrics.
+2. Sampled 45 real songs, we will refer to these as the control lyrics.
+3. From all the songs other than the 45 songs sampled, we sampled 10k songs, we will reffer to these as the lyrics population.
 4. For each ngram_size greater than 4: 
     1. For each song in the test lyrics we checked how many of the songs in the lyrics population shared an ngram of size ngram_size with the test lyrics.
     2. We did the same for the control lyrics with the population lyrics.
     3. We compared the values that we got from the test lyrics and compared them to the ones we get from the control lyrics using one-sided T test with the following hypothesis: 
        * H0 - generated lyrics are as original as real songs. 
-       * H1 - generated lyrics are less original then real songs.    
+       * H1 - generated lyrics are less original than real songs.    
 ## Reproduction
 1. Load the data [Add link to data chords_split_lang.pkl](https://pypi.org/project/langdetect/ "langdetect")
 2. Filter only the wanted language and save it as a df in pickle format
