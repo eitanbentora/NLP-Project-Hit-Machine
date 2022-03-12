@@ -6,7 +6,7 @@ import pandas as pd
 from typing import List
 import re
 from generating_consts import LYRICS_GENERATING_PARAMS, CHORDS_GENERATING_PARAMS, CHORDS_WINDOW, LYRICS_PREFIX, \
-    CHORDS_PREFIX
+    CHORDS_PREFIX, LYRICS_BEST_VERSION, CHORDS_BEST_VERSION
 
 
 def decode_chord_line(encoded_chord_line):
@@ -59,20 +59,24 @@ class SongWriter:
             song_inputs_list.append(f"{self.lyrics_prefix} [{', '.join(sorted(genres))}]: {song_input}")
         return song_inputs_list
 
-    def write_lyrics(self, genres_list: List[List[str]], song_inputs: List[str], lyrics_generating_params=None):
+    def write_lyrics(self, genres_list: List[List[str]], song_inputs: List[str], lyrics_generating_params=None, batch_size=None):
         if not lyrics_generating_params:
             lyrics_generating_params = LYRICS_GENERATING_PARAMS
         print(LYRICS_GENERATING_PARAMS)
         song_inputs_list = self.prepare_lyrics_inputs(genres_list, song_inputs)
+        if not batch_size:
+            batch_size = len(song_inputs_list)
         self.print(song_inputs_list)
-        inputs = self.tokenizer(song_inputs_list, return_tensors="pt", padding=True)
-        with torch.no_grad():
-            outputs = self.lyrics_model.generate(
-                input_ids=inputs['input_ids'].to(device='cuda'),
-                attention_mask=inputs['attention_mask'].to(device='cuda'),
-                **lyrics_generating_params
-            )
-        lyrics = self.tokenizer.batch_decode(outputs.to(device='cpu'), skip_special_tokens=True)
+        lyrics = []
+        for i in range(0, len(song_inputs), batch_size):
+            inputs = self.tokenizer(song_inputs_list[i:i+batch_size], return_tensors="pt", padding=True)
+            with torch.no_grad():
+                outputs = self.lyrics_model.generate(
+                    input_ids=inputs['input_ids'].to(device='cuda'),
+                    attention_mask=inputs['attention_mask'].to(device='cuda'),
+                    **lyrics_generating_params
+                )
+            lyrics += self.tokenizer.batch_decode(outputs.to(device='cpu'), skip_special_tokens=True)
         return [x.replace('@', '\n').replace("'?", "'") for x in lyrics]
 
     @staticmethod
@@ -129,10 +133,39 @@ class SongWriter:
         return songs
 
     def write_songs(self, genres_list: List[List[str]], song_inputs: List[str], lyrics_generating_params=None,
-                    chords_generating_params=None):
+                    chords_generating_params=None, batch_size=None):
         lyrics_list = self.write_lyrics(genres_list, song_inputs,
-                                        lyrics_generating_params=lyrics_generating_params)
+                                        lyrics_generating_params=lyrics_generating_params, batch_size=batch_size)
         chords_and_lyrics = self.write_songs_chords(genres_list=genres_list, lyrics_list=lyrics_list,
                                                     chords_generating_params=chords_generating_params)
         return chords_and_lyrics
+
+    
+def get_best_song_writer():
+    tokenizer = AutoTokenizer.from_pretrained("t5-base")
+    lyrics_model = T5ForConditionalGeneration.from_pretrained(LYRICS_BEST_VERSION)
+    lyrics_model = lyrics_model.to(device='cuda')
+    chords_model = T5ForConditionalGeneration.from_pretrained(CHORDS_BEST_VERSION)
+    chords_model = chords_model.to(device='cuda')
+    song_writer = SongWriter(lyrics_model, chords_model, tokenizer, verbose=True)
+    return song_writer
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 

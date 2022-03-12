@@ -16,4 +16,22 @@ def check_for_ngram(text1, text2, ngram=3):
 def clean_string(string):
     remove_regex = '[,.:\n\t\r]'
     clean =re.sub(remove_regex, ' ', string)
+    clean = ' '.join(clean.split())
     return clean
+
+def make_n_gram_dict(df, lyrics, min_ngram=4):
+    n_grams_match = {}
+    ngram = min_ngram
+    continue_run = True
+    while continue_run:
+        print(ngram)
+        n_grams_match[ngram] = {}
+        continue_run = False
+        for i, lyric in enumerate(lyrics):
+            n_grams_match[ngram][f'song_{i}'] = df['lyrics2'].apply(lambda x: check_for_ngram(lyric, x, ngram=ngram)).sum()
+            if n_grams_match[ngram][f'song_{i}'] > 0:
+                continue_run = True
+        ngram += 1
+        if ngram == 12:
+            break
+    return n_grams_match
