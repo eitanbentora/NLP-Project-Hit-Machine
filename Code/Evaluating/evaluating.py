@@ -19,6 +19,7 @@ def clean_string(string):
     clean = ' '.join(clean.split())
     return clean
 
+
 def make_n_gram_dict(df, lyrics, min_ngram=4):
     n_grams_match = {}
     ngram = min_ngram
